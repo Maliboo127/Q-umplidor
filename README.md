@@ -2,7 +2,7 @@
  
 *Proyecto de Qiskit Team*
  
-## 🎯 Propósito
+##  Propósito
  
 Desarrollaremos **Q-umplidor**, que funcionará como un gestor de trabajos para Linux, capaz de recibir, ejecutar, supervisar y administrar procesos.
  
@@ -15,7 +15,7 @@ Desarrollaremos **Q-umplidor**, que funcionará como un gestor de trabajos para 
 | Ruy Eleazar Valle Rojas | Verificación | ruy.valle6299@alumnos.udg.mx |
 | Diego Misael Camacho Nuño | Revisor de producto | diego.camacho8526@alumnos.udg.mx |
 
-## 🏗️ Construcción provisional
+##  Construcción provisional
 
 ### Tecnologías y entorno
 
@@ -64,7 +64,7 @@ python3 src/main.py
 
 El proyecto se encuentra en una etapa inicial; aún no tenemos definido con certeza el lenguaje que utilizaremos, pero de manera provisional será Python.
 
-### 🔹 Planeación
+###  Planeación
 
 
 El proyecto se construirá por etapas. Primero se hará que el sistema
@@ -79,7 +79,7 @@ usarse desde otros equipos dentro de una red privada o VPN. El código
 y la documentación se irán actualizando conforme se avance en cada
 etapa.
 
-### 🔸 Verificación prevista
+###  Verificación prevista
 
 A lo largo de las distintas etapas del proyecto se realizarán pruebas
 para verificar que el sistema se comporta como se espera, tanto en
@@ -91,7 +91,7 @@ seguimiento al cumplimiento de los requisitos a lo largo del tiempo.
 Los defectos que se identifiquen se registrarán y corregirán antes de
 avanzar a la siguiente etapa.
  
-## 📊 Estado del proyecto
+##  Estado del proyecto
  
 Nos encontramos en la etapa inicial de planificación y análisis. Estamos organizando los roles del equipo, preparando el repositorio y definiendo los requerimientos, el lenguaje y la estructura general. Una vez finalizada esta fase, daremos inicio al desarrollo del proyecto.
  
