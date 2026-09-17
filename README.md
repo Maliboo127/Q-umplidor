@@ -6,9 +6,10 @@
 
 *Proyecto de **Qiskit Team** — Programación de Sistemas Avanzados 2026B*
 
-![Status](https://img.shields.io/badge/estado-en%20planeación-yellow)
-![Lenguaje](https://img.shields.io/badge/lenguaje-Python%203%20(provisional)-blue)
+![Status](https://img.shields.io/badge/estado-Hito%201%20en%20progreso-brightgreen)
+![Lenguaje](https://img.shields.io/badge/lenguaje-Python%203-blue)
 ![Plataforma](https://img.shields.io/badge/plataforma-Linux-informational)
+![Tests](https://img.shields.io/badge/pruebas-12%2F12%20PASS-success)
 ![Licencia](https://img.shields.io/badge/licencia-académica-lightgrey)
 
 </div>
@@ -55,8 +56,9 @@
 
 | | |
 |---|---|
-| 🐍 **Lenguaje** | Python 3 *(provisional — en evaluación, ver [ADR-0001](docs/decisions/0001-lenguaje-runtime.md))* |
-| 🐧 **Sistema operativo** | Linux |
+| 🐍 **Lenguaje** | Python 3 *(confirmado — ver [ADR-0001](docs/decisions/0001-lenguaje-runtime.md), estado: Aceptado)* |
+| 🐧 **Sistema operativo objetivo** | Linux *(desarrollo también probado en Windows por portabilidad de las pruebas)* |
+| 🧵 **Modelo de concurrencia** | Pool de hilos + cola compartida, ver [ADR-0002](docs/decisions/0002-modelo-concurrencia.md), estado: Aceptado |
 
 ### 🗂️ Estructura del proyecto
 
@@ -93,13 +95,31 @@ git clone https://github.com/Maliboo127/Q-Core.git
 cd Q-Core
 ```
 
-**2. Ejecutar el programa**
+**2. Correr las pruebas automatizadas**
 
 ```bash
-python3 src/main.py
+python3 -m pip install pytest
+python3 -m pytest tests/ -v
 ```
 
-> ⚠️ El proyecto se encuentra en etapa inicial; el lenguaje definitivo aún no está confirmado. Python 3 es la elección provisional mientras se cierra el [ADR-0001](docs/decisions/0001-lenguaje-runtime.md).
+**3. Ver una demostración completa del flujo local**
+
+```bash
+python3 src/main.py demo
+```
+
+Esto envía varios trabajos, cancela uno en ejecución, lista todos los trabajos y muestra su estado y código de salida final — el flujo mínimo exigido para el Hito 1.
+
+**4. Usar el cliente de línea de comandos**
+
+```bash
+python3 src/main.py submit -- echo "hola"
+python3 src/main.py list
+python3 src/main.py status <job_id>
+python3 src/main.py cancel <job_id>
+```
+
+> ⚠️ **Limitación conocida:** cada invocación separada del CLI crea un gestor de trabajos nuevo (todavía no hay un servicio en segundo plano ni persistencia), así que `status`/`list` no ven trabajos enviados en una terminal distinta. Para ver el flujo completo en una sola ejecución, usa el modo `demo`. Esto se resuelve en el Hito 2. Detalle completo en [`docs/technical-guide/architecture.md`](docs/technical-guide/architecture.md).
 
 ---
 
@@ -130,14 +150,19 @@ Cada prueba y su resultado se documentarán como evidencia reproducible dentro d
 
 ## 📊 Estado del proyecto
 
-🟡 **Etapa actual: Planificación y análisis (Avance 0)**
+🟢 **Etapa actual: Hito 1 — Núcleo local (Avance 01)**
 
 - [x] Roles del equipo definidos
 - [x] Repositorio y estructura mínima creados
-- [x] Primeras 3 decisiones ADR registradas (lenguaje, concurrencia, persistencia)
+- [x] ADR-0001 (lenguaje) y ADR-0002 (concurrencia) — **Aceptados**, con prototipo funcional de evidencia
 - [x] Cronograma y riesgos iniciales registrados
-- [ ] Acceso del profesor confirmado como colaborador
-- [ ] Inicio de desarrollo del núcleo local (Hito 1)
+- [x] Núcleo local funcional: envío, ID único, ejecución como proceso separado, estados, consulta, listado, cancelación, código de salida
+- [x] 12/12 pruebas unitarias automatizadas en verde
+- [x] Arquitectura y modelo de estados documentados
+- [x] Matriz de trazabilidad en construcción (64 requisitos, sin huecos)
+- [x] Acceso del profesor confirmado como colaborador
+- [ ] Persistencia entre reinicios (Hito 2)
+- [ ] Acceso remoto vía LAN/VPN (Hito 3)
 
 ---
 
@@ -146,9 +171,13 @@ Cada prueba y su resultado se documentarán como evidencia reproducible dentro d
 | Recurso | Ubicación |
 |---|---|
 | 🧩 Decisiones de arquitectura (ADR) | [`docs/decisions/`](docs/decisions/) |
+| 🏗️ Arquitectura del núcleo local | [`docs/technical-guide/architecture.md`](docs/technical-guide/architecture.md) |
+| 🔄 Modelo de estados | [`docs/technical-guide/state-model.md`](docs/technical-guide/state-model.md) |
+| 🤖 Registro de uso de IA | [`docs/ai-usage/`](docs/ai-usage/) |
 | 🗓️ Cronograma | [`project-management/cronograma.md`](project-management/cronograma.md) |
 | 👥 Roles y revisores | [`project-management/roles.md`](project-management/roles.md) |
-| ✅ Plan de verificación | [`verif/verification-plan/`](verif/verification-plan/) |
+| ✅ Matriz de trazabilidad | [`verif/verification-plan/traceability-matrix.md`](verif/verification-plan/traceability-matrix.md) |
+| 📸 Evidencia de la demo (Avance 01) | [`verif/results/run-001-avance01/`](verif/results/run-001-avance01/) |
 | 🐛 Plantillas de Issues | [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/) |
 
 ---
