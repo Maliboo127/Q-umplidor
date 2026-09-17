@@ -1,0 +1,20 @@
+﻿============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/claude/qumplidor
+collecting ... collected 12 items
+
+tests/test_job_manager.py::TestJobManager::test_cancel_queued_job PASSED [  8%]
+tests/test_job_manager.py::TestJobManager::test_cancel_running_job PASSED [ 16%]
+tests/test_job_manager.py::TestJobManager::test_job_reaches_failed_with_nonzero_exit_code PASSED [ 25%]
+tests/test_job_manager.py::TestJobManager::test_job_reaches_succeeded_with_exit_code_zero PASSED [ 33%]
+tests/test_job_manager.py::TestJobManager::test_list_filters_by_state PASSED [ 41%]
+tests/test_job_manager.py::TestJobManager::test_nonexistent_binary_marks_job_failed_not_crash PASSED [ 50%]
+tests/test_job_manager.py::TestJobManager::test_respects_concurrency_limit PASSED [ 58%]
+tests/test_job_manager.py::TestJobManager::test_status_of_unknown_job_raises PASSED [ 66%]
+tests/test_job_manager.py::TestJobManager::test_stdout_and_stderr_are_captured_separately PASSED [ 75%]
+tests/test_job_manager.py::TestJobManager::test_submit_rejects_empty_command PASSED [ 83%]
+tests/test_job_manager.py::TestJobManager::test_submit_rejects_non_list PASSED [ 91%]
+tests/test_job_manager.py::TestJobManager::test_submit_returns_unique_id PASSED [100%]
+
+============================== 12 passed in 4.73s ==============================
