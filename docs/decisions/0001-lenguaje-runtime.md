@@ -1,7 +1,7 @@
 ﻿# ADR-0001: Lenguaje y runtime para Q-umplidor
 
 ## Estado
-Propuesta abierta — pendiente de resolución antes del Hito 1 (Núcleo local).
+**Aceptado** (confirmado en Hito 1, con prototipo funcional de referencia).
 
 ## Contexto y problema
 Q-umplidor deberá ejecutar comandos en procesos separados, manejar señales, IPC,
@@ -36,10 +36,12 @@ evaluado formalmente contra alternativas. Esta ADR formaliza esa evaluación.
 - Menor experiencia previa del equipo; curva de aprendizaje adicional.
 
 ## Decisión
-**Pendiente.** El equipo se inclina provisionalmente por **Python 3**, priorizando
-velocidad de desarrollo dado el tamaño del equipo y el calendario académico, pero
-esta decisión debe confirmarse antes de cerrar el Hito 1, después de una prueba
-mínima de manejo de procesos y señales en Python.
+**Python 3.** Se confirma tras implementar el núcleo local completo (envío,
+ejecución como proceso separado, consulta, listado, cancelación y captura de
+stdout/stderr) usando únicamente `subprocess`, `threading`, `queue` y `signal`
+de la librería estándar — sin necesidad de dependencias externas para esta
+etapa. El manejo de procesos y señales resultó directo y no presentó los
+problemas de concurrencia que se temían (ver ADR-0002).
 
 ## Consecuencias
 **Positivas (si se confirma Python):** desarrollo más rápido, más tiempo disponible
@@ -52,5 +54,9 @@ para no introducir privilegios o dependencias no declaradas.
 RF-04, RF-05, RNF-01, RNF-02, RNF-03, RNF-07.
 
 ## Evidencia / prototipo
-Pendiente: se agregará un script mínimo de `fork`/`subprocess` + captura de
-señal como evidencia antes de confirmar esta ADR.
+Núcleo funcional en `src/job_manager.py`, `src/cli.py`, `src/main.py`.
+12/12 pruebas unitarias en verde (`tests/test_job_manager.py`, ejecutables
+con `bash verif/scripts/run_tests.sh`), cubriendo envío, ejecución, estados,
+cancelación (en cola y en ejecución), captura separada de stdout/stderr,
+comando inválido sin caída del servicio, y respeto del límite de
+concurrencia.

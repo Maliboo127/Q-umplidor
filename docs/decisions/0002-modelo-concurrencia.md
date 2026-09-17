@@ -1,7 +1,7 @@
 ﻿# ADR-0002: Modelo de concurrencia y ejecución de trabajos
 
 ## Estado
-Propuesta abierta — pendiente de resolución antes del Hito 1.
+**Aceptado** (confirmado en Hito 1, con prototipo funcional de referencia).
 
 ## Contexto y problema
 El sistema deberá ejecutar múltiples trabajos en segundo plano sin bloquear la
@@ -38,9 +38,14 @@ Cada solicitud remota o local dispara su propio manejo aislado.
   concurrencia consistente entre clientes (RF-05, RNF-07).
 
 ## Decisión
-**Pendiente.** Tendencia inicial hacia la **Opción A** (hilo supervisor +
-`Popen` por trabajo) por su menor complejidad de IPC, a confirmar tras prototipo
-que demuestre el límite de concurrencia bajo prueba (TC-002).
+**Variante de la Opción A/B combinadas: pool fijo de hilos trabajadores
+(tamaño = límite de concurrencia) que consumen una `queue.Queue` compartida,
+lanzando cada trabajo con `subprocess.Popen`.** El límite de concurrencia
+queda garantizado de forma estructural (nunca hay más hilos trabajadores que
+el límite configurado), evitando la necesidad de un semáforo adicional como
+en la Opción A pura. Confirmado con prueba automatizada
+(`test_respects_concurrency_limit`) que lanza 4 trabajos con límite de 2 y
+verifica que nunca haya más de 2 en RUNNING simultáneamente.
 
 ## Consecuencias
 **Positivas:** menor superficie de error de sincronización.
@@ -53,5 +58,9 @@ de procesos (relevante para RF-26, RNF-27).
 RF-03, RF-04, RF-05, RF-25, RF-26, RNF-04, RNF-07, RNF-27.
 
 ## Evidencia / prototipo
-Pendiente: prueba con 3+ procesos hijos concurrentes y verificación de que no se
-supera el límite configurado (vinculada a TC-002).
+`src/job_manager.py` (clase `JobManager`, método `_worker_loop`). Prueba
+automatizada `test_respects_concurrency_limit` en
+`tests/test_job_manager.py`, y pruebas de cancelación en cola
+(`test_cancel_queued_job`) y en ejecución (`test_cancel_running_job`) que
+validan la sincronización con `threading.RLock` sobre la cola y la tabla
+de estados (relevante para RF-26, RNF-27).
