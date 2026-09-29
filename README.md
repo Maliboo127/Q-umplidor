@@ -4,7 +4,7 @@
  
 ## 🎯 Propósito
  
-Desarrollaremos **Q-umplidor**, que funcionará como un gestor de trabajos para Linux, capaz de recibir, ejecutar, supervisar y administrar procesos.
+Desarrollar un gestor de trabajos para Linux; Capaz de recibir, ejecutar, supervisar y administrar procesos.
  
 ## 👥 Integrantes
 
