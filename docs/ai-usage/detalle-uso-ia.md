@@ -6,21 +6,21 @@ Detalle de cada entrada del [RegistroIA.md](RegistroIA.md) El ID de cada secció
 
 ## 🤖 IA-001
 
-- **Prompt resumido:** 
-- **Qué generó:** 
-- **Qué se cambió o descartó:** 
-- **Quién lo revisó:**
+- **Prompt:** me piden un documento el que registre el uso de IA, ¿como puedo hacerlo?
+- **Qué generó:** Generó las plantillas para los documentos  [RegistroIA.md](RegistroIA.md) y  [detalles-uso-ia.md](detalles-uso-ia.md)
+- **Qué se cambió o descartó:** Algunos campos de la tabla del registro fueron eliminados para optimizar el registro y dejar solo la información más relevante.
+- **Quién lo revisó/realizó:** Marlene Sandoval
 
 ## 🤖 IA-002
 
-- **Prompt resumido:** 
+- **Prompt:** 
 - **Qué generó:** 
 - **Qué se cambió o descartó:** 
 - **Quién lo revisó:**
 
 ## 🤖 IA-003
 
-- **Prompt resumido:** 
+- **Prompt:** 
 - **Qué generó:** 
 - **Qué se cambió o descartó:** 
 - **Quién lo revisó:** 
