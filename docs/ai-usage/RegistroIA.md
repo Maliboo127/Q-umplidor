@@ -5,9 +5,9 @@ para generar, revisar o modificar un artefacto del proyecto. El detalle de cada 
 
 ---
 
-| ID | Fecha | Integrante | Herramienta / modelo |Documento modificado | Propósito | Cómo se verificó | Resultado |
-|----|-------|------------|----------------------|--------------------|-----------|------------------|-----------|
-| IA-001 |  |  |  |  |  |  |  |
+| ID | Fecha | Integrante | Herramienta / modelo |Documento modificado | Propósito | Resultado |
+|----|-------|------------|----------------------|--------------------|-----------|------------------|
+| IA-001 |01/10/2026  | Marlene | Claude AI | RegistoIA y detalles-uso-ia | Crear una plantilla que permita el registro del uso de IA | La creación de los documentos RegistroIA y detalles-uso-ia y su respectiva plantilla para solo rellenar los campos cada que se haga un registro nuevo. |  
 | IA-002 |  |  |  |  |  |  |  |
 | IA-003 |  |  |  |  |  |  |  |
 | IA-004 |  |  |  |  |  |  |  |
