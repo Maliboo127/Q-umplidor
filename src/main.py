@@ -20,7 +20,7 @@ def estado_trabajo(trabajo):
 
 
 def obtener_id(partes, comando):
-    """Valida que el comando traiga un ID válido y que exista."""
+    """Valida que el comando traiga un ID válido y que exista. Devuelve el ID o None."""
     if len(partes) != 2:
         print(f"Uso: {comando} <id>")
         return None
@@ -95,6 +95,20 @@ while True:
             transcurrido = int(time.time() - trabajo["inicio"])
             print(f"[{id_trabajo}] {trabajo['comando']} -> {estado_trabajo(trabajo)} ({transcurrido}s)")
 
+    # Listar los trabajos
+    elif partes[0] == "listar":
+        if not trabajos:
+            print("No hay trabajos registrados")
+        else:
+            print(f"{'ID':<4} {'ESTADO':<20} {'TIEMPO':<8} COMANDO")
+            for id_trabajo, trabajo in trabajos.items():
+                transcurrido = int(time.time() - trabajo["inicio"])
+                print(
+                    f"{id_trabajo:<4} {estado_trabajo(trabajo):<20} "
+                    f"{transcurrido:<7}s {trabajo['comando']}"
+                )
+
     
+
     else:
         print(f"{partes[0]}: comando no reconocido")
