@@ -77,6 +77,7 @@ while True:
                 # RF-01/RF-06/RF-07: se guarda el trabajo con su ID,
                 # comando, hora de inicio y bandera de cancelación
                 # (esta última la usará quien implemente RF-10).
+                # Guarda el trabajo
                 trabajos[siguiente_id] = {
                     "proceso": proceso,
                     "comando": entrada,
@@ -91,6 +92,15 @@ while True:
                 print("sleep: invalid time interval")
 
     # RF-09: listar trabajos con su estado
+    # Consulta el estado de un trabajo
+    elif partes[0] == "estado":
+        id_trabajo = obtener_id(partes, "estado")
+        if id_trabajo is not None:
+            trabajo = trabajos[id_trabajo]
+            transcurrido = int(time.time() - trabajo["inicio"])
+            print(f"[{id_trabajo}] {trabajo['comando']} -> {estado_trabajo(trabajo)} ({transcurrido}s)")
+
+    # Listar los trabajos
     elif partes[0] == "listar":
         if not trabajos:
             print("No hay trabajos registrados")
@@ -113,6 +123,26 @@ while True:
                 print(f"codigo: el trabajo [{id_trabajo}] todavía está en ejecución, no tiene código de salida")
             else:
                 print(f"codigo: el trabajo [{id_trabajo}] terminó con código de salida {codigo}")
+
+    
+    # Solicitud de cancelación
+    elif partes[0] == "cancelar":
+        id_trabajo = obtener_id(partes, "cancelar")
+        if id_trabajo is not None:
+            trabajo = trabajos[id_trabajo]
+            proceso = trabajo["proceso"]
+
+            if proceso.poll() is not None:
+                print(f"cancelar: el trabajo [{id_trabajo}] ya terminó ({estado_trabajo(trabajo)})")
+            else:
+                trabajo["cancelado"] = True
+                proceso.terminate()  # Envía SIGTERM
+                try:
+                    proceso.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    proceso.kill()  # Envía SIGKILL si no respondió
+                    proceso.wait()
+                print(f"Trabajo [{id_trabajo}] cancelado")
 
     # RNF-08/09: un comando no reconocido no debe tumbar el servicio
     else:
