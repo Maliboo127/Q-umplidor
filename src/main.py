@@ -108,7 +108,24 @@ while True:
                     f"{transcurrido:<7}s {trabajo['comando']}"
                 )
 
-    
+    # Solicitud de cancelación
+    elif partes[0] == "cancelar":
+        id_trabajo = obtener_id(partes, "cancelar")
+        if id_trabajo is not None:
+            trabajo = trabajos[id_trabajo]
+            proceso = trabajo["proceso"]
+
+            if proceso.poll() is not None:
+                print(f"cancelar: el trabajo [{id_trabajo}] ya terminó ({estado_trabajo(trabajo)})")
+            else:
+                trabajo["cancelado"] = True
+                proceso.terminate()  # Envía SIGTERM
+                try:
+                    proceso.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    proceso.kill()  # Envía SIGKILL si no respondió
+                    proceso.wait()
+                print(f"Trabajo [{id_trabajo}] cancelado")
 
     else:
         print(f"{partes[0]}: comando no reconocido")
