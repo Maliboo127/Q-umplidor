@@ -108,6 +108,25 @@ while True:
                     f"{transcurrido:<7}s {trabajo['comando']}"
                 )
 
+    # Obtener el código de salida de un trabajo
+    elif partes[0] == "codigo":
+        if len(partes) != 2:
+            print("Uso: codigo <id>")
+        else:
+            try:
+                id_trabajo = int(partes[1])
+                if id_trabajo not in trabajos:
+                    print(f"codigo: no existe el trabajo [{id_trabajo}]")
+                else:
+                    trabajo = trabajos[id_trabajo]
+                    codigo = trabajo["proceso"].poll()
+                    if codigo is None:
+                        print(f"codigo: el trabajo [{id_trabajo}] todavía está en ejecución, no tiene código de salida")
+                    else:
+                        print(f"codigo: el trabajo [{id_trabajo}] terminó con código de salida {codigo}")
+            except ValueError:
+                print("codigo: el ID debe ser un número")
+
     # Solicitud de cancelación
     elif partes[0] == "cancelar":
         id_trabajo = obtener_id(partes, "cancelar")
@@ -127,5 +146,6 @@ while True:
                     proceso.wait()
                 print(f"Trabajo [{id_trabajo}] cancelado")
 
+    # Manejar comandos inválidos sin terminar el servicio 
     else:
         print(f"{partes[0]}: comando no reconocido")
