@@ -67,7 +67,7 @@ Un trabajo que todavía está en ejecución no tiene código de salida. En ese c
 
 Los tres casos siguientes se ejecutaron en una misma sesión de la consola. La captura muestra las tres consultas, una por caso:
 
-![TC-004 a TC-006: código de salida de los trabajos 1, 2 y 3](img/TC-004-006.png)
+![TC-004 a TC-006: código de salida de los trabajos 1, 2 y 3](img/TC-004-TC-006.png)
 
 ### TC-002: Trabajo terminado correctamente (ID 1)
 
