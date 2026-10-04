@@ -73,6 +73,42 @@ python3 src/main.py
 | `codigo <id>` | Informa el código de salida de un trabajo terminado |
 
 
+## Arquitectura inicial (preliminar)
+
+Q-umplidor es una aplicación en capas, escrita en Python 3 con la biblioteca estándar. La consola recibe los comandos, un gestor de trabajos los registra y aplica el límite de concurrencia, y un pool de hilos lanza cada trabajo como un proceso independiente del sistema operativo.
+
+```mermaid
+flowchart TD
+    U["Usuario (terminal)"] --> C["Consola e intérprete de comandos"]
+    C --> G["Gestor de trabajos"]
+    G --> Q["Cola de espera"]
+    Q --> H["Hilos trabajadores<br/>(pool = límite de concurrencia)"]
+    H --> P["Procesos hijos<br/>(subprocess.Popen)"]
+    R["Acceso remoto LAN/VPN<br/>(pendiente)"] -.-> G
+    G -.-> DB["Persistencia<br/>(pendiente)"]
+```
+
+*Las líneas discontinuas indican componentes pendientes.*
+
+Detalle completo en la [guía de arquitectura](docs/technical-guide/arquitectura.md). Decisiones relacionadas:
+[ADR-0001](docs/decisions/0001-lenguaje-runtime.md) (lenguaje),
+[ADR-0002](docs/decisions/0002-modelo-concurrencia.md) (concurrencia) y
+[ADR-0003](docs/decisions/0003-persistencia.md) (persistencia, abierta).
+
+## Modelo preliminar de estados
+
+Un trabajo pasa por los siguientes estados, y los finales no tienen regreso:
+
+| Estado | Significado |
+|---|---|
+| `QUEUED` | Espera turno porque se alcanzó el límite de concurrencia |
+| `RUNNING` | Se está ejecutando como proceso hijo |
+| `FINISHED` | Terminó correctamente (código de salida `0`) |
+| `FAILED` | Terminó con error (código `1` a `255`) |
+| `CANCELLED` | Se canceló en cola o durante la ejecución |
+| `INTERRUPTED` | Estaba pendiente cuando el servicio se reinició (pendiente de implementar) |
+
+*Los nombres distintos de `QUEUED` y `RUNNING` son preliminares.* Transiciones, reglas y diagrama en el [modelo de estados](docs/technical-guide/modelo-de-estados.md).
 
 ### 🔹 Planeación
 
