@@ -21,8 +21,11 @@ def estado_trabajo(trabajo):
 
 def obtener_id(partes, comando):
     """Valida que el comando traiga un ID válido y que exista. Devuelve el ID o None."""
+    if len(partes) == 1:
+        print(f"{comando}: falta el ID del trabajo. Uso: {comando} <id>")
+        return None
     if len(partes) != 2:
-        print(f"Uso: {comando} <id>")
+        print(f"{comando}: argumentos incorrectos. Uso: {comando} <id>")
         return None
 
     try:
@@ -50,14 +53,40 @@ while True:
     if len(partes) == 0:
         continue
 
-    if partes[0] == "sleep":
+    if partes[0] == "help":
+        if len(partes) != 1:
+            print("help: no acepta argumentos. Uso: help")
+            continue
+        print("Comandos disponibles:")
+        print("  sleep <segundos>    Ejecutar una espera en primer plano.")
+        print("  sleep <segundos> &  Ejecutar un trabajo en segundo plano.")
+        print("  estado <id>         Consultar el estado de un trabajo.")
+        print("  listar              Listar los trabajos registrados.")
+        print("  codigo <id>         Consultar el código de salida.")
+        print("  cancelar <id>       Cancelar un trabajo.")
+        print("  help                Mostrar esta ayuda.")
+
+    elif partes[0] == "sleep":
+        if len(partes) == 1 or partes == ["sleep", "&"]:
+            print("sleep: faltan los segundos. Uso: sleep <segundos> o sleep <segundos> &")
+            continue
+
+        if len(partes) not in (2, 3) or (len(partes) == 3 and partes[2] != "&"):
+            print("sleep: argumentos incorrectos. Uso: sleep <segundos> o sleep <segundos> &")
+            continue
+        try:
+            segundos = int(partes[1])
+            if segundos < 0:
+                raise ValueError
+        except ValueError:
+            print("sleep: los segundos deben ser un entero no negativo")
+            continue
 
         # Caso: sleep 10
         if len(partes) == 2:
             try:
-                segundos = int(partes[1])
                 time.sleep(segundos)
-            except ValueError:
+            except (ValueError, OverflowError):
                 print("sleep: invalid time interval")
             except KeyboardInterrupt:
                 print()
@@ -65,7 +94,6 @@ while True:
         # Caso: sleep 10 &
         elif len(partes) == 3 and partes[2] == "&":
             try:
-                segundos = int(partes[1])
 
                 proceso = subprocess.Popen([
                     sys.executable,
@@ -84,7 +112,7 @@ while True:
                 print(f"ID: [{siguiente_id}]")
                 siguiente_id += 1
 
-            except ValueError:
+            except (ValueError, OverflowError):
                 print("sleep: invalid time interval")
 
     # Consulta el estado de un trabajo
@@ -97,6 +125,9 @@ while True:
 
     # Listar los trabajos
     elif partes[0] == "listar":
+        if len(partes) != 1:
+            print("listar: no acepta argumentos. Uso: listar")
+            continue
         if not trabajos:
             print("No hay trabajos registrados")
         else:
@@ -110,8 +141,10 @@ while True:
 
     # Obtener el código de salida de un trabajo
     elif partes[0] == "codigo":
-        if len(partes) != 2:
-            print("Uso: codigo <id>")
+        if len(partes) == 1:
+            print("codigo: falta el ID del trabajo. Uso: codigo <id>")
+        elif len(partes) != 2:
+            print("codigo: argumentos incorrectos. Uso: codigo <id>")
         else:
             try:
                 id_trabajo = int(partes[1])
