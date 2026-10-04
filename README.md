@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/img/q-umplidor-logo.png" alt="Logo de Q-umplidor" width="480">
+  <img src="verif/results/img/q-umplidor-logo.png" alt="Logo de Q-umplidor" width="480">
 </p>
  
 *Proyecto de Qiskit Team*
