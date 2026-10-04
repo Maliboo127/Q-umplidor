@@ -1,4 +1,6 @@
-# Q-umplidor
+<p align="center">
+  <img src="docs/img/q-umplidor-logo.png" alt="Logo de Q-umplidor" width="480">
+</p>
  
 *Proyecto de Qiskit Team*
  
@@ -18,14 +20,14 @@ Desarrollaremos **Q-umplidor**, que funcionará como un gestor de trabajos para 
 ## 🏗️ Construcción provisional
 
 ### Tecnologías y entorno
-
+> El proyecto se encuentra en una etapa inicial; aún no tenemos definido con certeza el lenguaje que utilizaremos, pero de manera provisional será Python.
 - **Python 3:** lenguaje propuesto para el desarrollo.
 - **Linux:** sistema operativo.
 
-### Estructura del proyecto
+### 📁 Estructura del proyecto
 
 ```text
-Q-Core/
+Q-umplidor/
 ├── README.md                    # Visión, construcción, ejecución y prueba.
 ├── src/                         # Código de producción.
 ├── docs/
@@ -47,13 +49,13 @@ Q-Core/
 ```
 
 
-### Preparación y ejecución
+### 💻 Preparación y ejecución
 
 Clonar el repositorio y entrar a su carpeta:
 
 ```bash
-git clone https://github.com/Maliboo127/Q-Core.git
-cd Q-Core
+git clone https://github.com/Maliboo127/Q-umplidor.git
+cd Q-Cumplidor
 ```
 
 Ejecutar el programa:
@@ -62,7 +64,15 @@ Ejecutar el programa:
 python3 src/main.py
 ```
 
-El proyecto se encuentra en una etapa inicial; aún no tenemos definido con certeza el lenguaje que utilizaremos, pero de manera provisional será Python.
+### ⌨️ Comandos disponibles
+| Comando | Qué hace |
+|---|---|
+| `sleep N &` | Envía un trabajo en segundo plano y devuelve su ID |
+| `estado <id>` | Informa si el trabajo está en ejecución o terminó |
+| `listar` | Muestra los trabajos enviados |
+| `codigo <id>` | Informa el código de salida de un trabajo terminado |
+
+
 
 ### 🔹 Planeación
 
