@@ -108,7 +108,7 @@ Un trabajo pasa por los siguientes estados, y los finales no tienen regreso:
 | `CANCELLED` | Se canceló en cola o durante la ejecución |
 | `INTERRUPTED` | Estaba pendiente cuando el servicio se reinició (pendiente de implementar) |
 
-*Los nombres distintos de `QUEUED` y `RUNNING` son preliminares.* Transiciones, reglas y diagrama en el [modelo de estados](docs/technical-guide/modelo-de-estados.md).
+*Los nombres distintos de `QUEUED` y `RUNNING` son preliminares.* Transiciones, reglas y diagrama en el [modelo de estados](docs/technical-guide/ModeloDeEstados.md).
 
 ### 🔹 Planeación
 
