@@ -20,37 +20,30 @@
 - **Resultado esperado:** debe correr el trabajo permitiendo escribir nuevos comandos 
 - **Resultado obtenido:** efectivamente despues de colocar el comando da una salida de ID y permite seguir escribiendo comandos  
 
-<a id="tc-004"></a>
-## TC-004 — Consultar el estado
 
-- **Preparación:** tener activo un trabajo creado con `sleep 200 &`.
-- **Entrada:** `listar`.
-- **Resultado esperado:** poder consultar el estado del trabajo.
-- **Resultado obtenido, confirmado por el usuario:** el trabajo aparece con el estado «En ejecución». La consulta actual se hace mediante el listado; no existe un comando individual `estado <id>`.
+## CP-004 — Consultar el estado
 
-<a id="tc-005"></a>
-## TC-005 — Listar trabajos
+- **Entrada:** `estado 1`, con el trabajo `sleep 200 &` activo.
+- **Resultado esperado:** mostrar el comando, el estado y el tiempo transcurrido del trabajo con ID 1.
+- **Resultado obtenido:** apareció `[1] sleep 200 & -> En ejecución (5s)`.
 
-- **Preparación:** tener registrado el trabajo creado con `sleep 200 &`.
-- **Entrada:** `listar`.
-- **Resultado esperado:** mostrar los trabajos registrados con sus datos.
-- **Resultado obtenido, confirmado por el usuario:** se mostró el trabajo con ID 1, estado «En ejecución», tiempo transcurrido y comando `sleep 200 &`.
+## CP-005 — Listar trabajos
 
-<a id="tc-006"></a>
-## TC-006 — Solicitar la cancelación
+- **Entrada:** `listar`, después de crear un trabajo con `sleep 200 &`.
+- **Resultado esperado:** mostrar los trabajos registrados con su ID, estado, tiempo transcurrido y comando.
+- **Resultado obtenido:** se mostró el trabajo con ID 1, estado «En ejecución», tiempo transcurrido de 20 segundos y comando `sleep 200 &`.
 
-- **Preparación:** tener activo un trabajo con ID 1.
-- **Entrada de prueba propuesta:** `cancelar 1`.
-- **Resultado esperado del requisito:** detener el trabajo seleccionado y permitir que el programa siga atendiendo comandos.
-- **Resultado actual:** aparece `cancelar: comando no reconocido`. La operación no está implementada y el trabajo no se cancela. El rechazo del comando se observó en la comprobación exploratoria anterior; no se ha realizado una nueva prueba sobre un trabajo activo.
+## CP-006 — Solicitar la cancelación
 
-<a id="tc-007"></a>
-## TC-007 — Obtener el código de salida
+- **Entrada:** `cancelar 1`, con el trabajo `sleep 200 &` activo.
+- **Resultado esperado:** detener el trabajo con ID 1 y permitir seguir escribiendo comandos.
+- **Resultado obtenido:** apareció `Trabajo [1] cancelado`. Al consultar `estado 1`, el trabajo apareció como «Cancelado» y el programa continuó funcionando.
 
-- **Preparación:** esperar a que termine correctamente el trabajo con ID 1.
-- **Entrada:** `codigo 1`.
-- **Resultado esperado:** mostrar el código de salida 0 para una terminación correcta.
-- **Resultado obtenido, confirmado por el usuario:** apareció `codigo: el trabajo [1] terminó con código de salida 0`.
+## CP-007 — Obtener el código de salida
+
+- **Entrada:** `codigo 1`, después de que el trabajo con ID 1 termine correctamente.
+- **Resultado esperado:** mostrar el código de salida 0.
+- **Resultado obtenido:** apareció `codigo: el trabajo [1] terminó con código de salida 0`.
 
 ## CP-008 — Manejar un comando inválido
 
