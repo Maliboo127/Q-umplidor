@@ -1,22 +1,111 @@
+import json
+import os
+from pathlib import Path
 import subprocess
 import sys
 import time
 
-siguiente_id = 1
-trabajos = {}
+ARCHIVO_TRABAJOS = Path(__file__).resolve().parent.parent / "data" / "trabajos.json"
+
+
+def guardar_trabajos():
+    """Guarda el historial y el siguiente ID sin escribir objetos Popen."""
+    ARCHIVO_TRABAJOS.parent.mkdir(parents=True, exist_ok=True)
+    datos = {
+        "siguiente_id": siguiente_id,
+        "trabajos": [
+            {
+                "id": id_trabajo,
+                "comando": trabajo["comando"],
+                "inicio": trabajo["inicio"],
+                "fin": trabajo["fin"],
+                "estado": trabajo["estado"],
+                "codigo": trabajo["codigo"],
+            }
+            for id_trabajo, trabajo in trabajos.items()
+        ],
+    }
+    temporal = ARCHIVO_TRABAJOS.with_suffix(".tmp")
+    try:
+        with temporal.open("w", encoding="utf-8") as archivo:
+            json.dump(datos, archivo, ensure_ascii=False, indent=2)
+        os.replace(temporal, ARCHIVO_TRABAJOS)
+    finally:
+        temporal.unlink(missing_ok=True)
+
+
+def cargar_trabajos():
+    """Recupera el historial; una ejecución anterior ya no puede supervisarse."""
+    if not ARCHIVO_TRABAJOS.exists():
+        return {}, 1
+
+    try:
+        with ARCHIVO_TRABAJOS.open(encoding="utf-8") as archivo:
+            datos = json.load(archivo)
+        recuperados = {}
+        for registro in datos["trabajos"]:
+            id_trabajo = registro["id"]
+            if not isinstance(id_trabajo, int) or id_trabajo < 1 or id_trabajo in recuperados:
+                raise ValueError("ID inválido o repetido")
+            recuperados[id_trabajo] = {
+                "proceso": None,
+                "comando": registro["comando"],
+                "inicio": registro["inicio"],
+                "fin": registro["fin"],
+                "estado": registro["estado"],
+                "codigo": registro["codigo"],
+                "cancelado": registro["estado"] == "Cancelado",
+            }
+        proximo = datos["siguiente_id"]
+        if not isinstance(proximo, int) or proximo < 1:
+            raise ValueError("contador de ID inválido")
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        raise SystemExit(f"No se pudo cargar {ARCHIVO_TRABAJOS}: {error}") from error
+
+    return recuperados, max(proximo, max(recuperados, default=0) + 1)
+
+
+trabajos, siguiente_id = cargar_trabajos()
+if any(trabajo["estado"] == "En ejecución" for trabajo in trabajos.values()):
+    for trabajo in trabajos.values():
+        if trabajo["estado"] == "En ejecución":
+            trabajo["estado"] = "Interrumpido"
+            trabajo["fin"] = time.time()
+    guardar_trabajos()
+
+
+def actualizar_trabajo(trabajo):
+    """Registra el resultado cuando el proceso termina durante esta sesión."""
+    proceso = trabajo["proceso"]
+    if proceso is not None:
+        codigo = proceso.poll()
+        if codigo is not None:
+            trabajo["proceso"] = None
+            trabajo["codigo"] = codigo
+            trabajo["fin"] = time.time()
+            if trabajo["cancelado"]:
+                trabajo["estado"] = "Cancelado"
+            elif codigo == 0:
+                trabajo["estado"] = "Terminado"
+            else:
+                trabajo["estado"] = f"Falló (código {codigo})"
+            guardar_trabajos()
+    return trabajo["estado"]
 
 
 def estado_trabajo(trabajo):
     """Devuelve el estado actual de un trabajo como texto."""
-    codigo = trabajo["proceso"].poll()  # None = sigue corriendo
+    return actualizar_trabajo(trabajo)
 
-    if codigo is None:
-        return "En ejecución"
-    if trabajo["cancelado"]:
-        return "Cancelado"
-    if codigo == 0:
-        return "Terminado"
-    return f"Falló (código {codigo})"
+
+def tiempo_trabajo(trabajo):
+    """Evita que el tiempo de un trabajo terminado siga aumentando."""
+    return int((trabajo["fin"] or time.time()) - trabajo["inicio"])
+
+
+def codigo_salida_shell(codigo):
+    """Presenta las terminaciones por señal como lo hace Bash en Linux."""
+    return 128 - codigo if os.name == "posix" and codigo < 0 else codigo
 
 
 def obtener_id(partes, comando):
@@ -106,11 +195,15 @@ while True:
                     "proceso": proceso,
                     "comando": entrada,
                     "inicio": time.time(),
+                    "fin": None,
+                    "estado": "En ejecución",
+                    "codigo": None,
                     "cancelado": False,
                 }
 
                 print(f"ID: [{siguiente_id}]")
                 siguiente_id += 1
+                guardar_trabajos()
 
             except (ValueError, OverflowError):
                 print("sleep: invalid time interval")
@@ -120,8 +213,8 @@ while True:
         id_trabajo = obtener_id(partes, "estado")
         if id_trabajo is not None:
             trabajo = trabajos[id_trabajo]
-            transcurrido = int(time.time() - trabajo["inicio"])
-            print(f"[{id_trabajo}] {trabajo['comando']} -> {estado_trabajo(trabajo)} ({transcurrido}s)")
+            estado = estado_trabajo(trabajo)
+            print(f"[{id_trabajo}] {trabajo['comando']} -> {estado} ({tiempo_trabajo(trabajo)}s)")
 
     # Listar los trabajos
     elif partes[0] == "listar":
@@ -133,9 +226,10 @@ while True:
         else:
             print(f"{'ID':<4} {'ESTADO':<20} {'TIEMPO':<8} COMANDO")
             for id_trabajo, trabajo in trabajos.items():
-                transcurrido = int(time.time() - trabajo["inicio"])
+                estado = estado_trabajo(trabajo)
+                transcurrido = tiempo_trabajo(trabajo)
                 print(
-                    f"{id_trabajo:<4} {estado_trabajo(trabajo):<20} "
+                    f"{id_trabajo:<4} {estado:<20} "
                     f"{transcurrido:<7}s {trabajo['comando']}"
                 )
 
@@ -152,11 +246,14 @@ while True:
                     print(f"codigo: no existe el trabajo [{id_trabajo}]")
                 else:
                     trabajo = trabajos[id_trabajo]
-                    codigo = trabajo["proceso"].poll()
-                    if codigo is None:
+                    estado = estado_trabajo(trabajo)
+                    codigo = trabajo["codigo"]
+                    if estado == "En ejecución":
                         print(f"codigo: el trabajo [{id_trabajo}] todavía está en ejecución, no tiene código de salida")
+                    elif codigo is None:
+                        print(f"codigo: no se conoce el código de salida del trabajo [{id_trabajo}] ({estado})")
                     else:
-                        print(f"codigo: el trabajo [{id_trabajo}] terminó con código de salida {codigo}")
+                        print(f"codigo: el trabajo [{id_trabajo}] terminó con código de salida {codigo_salida_shell(codigo)}")
             except ValueError:
                 print("codigo: el ID debe ser un número")
 
@@ -165,10 +262,11 @@ while True:
         id_trabajo = obtener_id(partes, "cancelar")
         if id_trabajo is not None:
             trabajo = trabajos[id_trabajo]
+            estado = estado_trabajo(trabajo)
             proceso = trabajo["proceso"]
 
-            if proceso.poll() is not None:
-                print(f"cancelar: el trabajo [{id_trabajo}] ya terminó ({estado_trabajo(trabajo)})")
+            if proceso is None:
+                print(f"cancelar: el trabajo [{id_trabajo}] ya terminó ({estado})")
             else:
                 trabajo["cancelado"] = True
                 proceso.terminate()  # Envía SIGTERM
@@ -177,8 +275,27 @@ while True:
                 except subprocess.TimeoutExpired:
                     proceso.kill()  # Envía SIGKILL si no respondió
                     proceso.wait()
+                estado_trabajo(trabajo)
                 print(f"Trabajo [{id_trabajo}] cancelado")
 
     # Manejar comandos inválidos sin terminar el servicio 
     else:
         print(f"{partes[0]}: comando no reconocido")
+
+
+# Al salir normalmente, termina los procesos que esta sesión aún supervisa.
+for trabajo in trabajos.values():
+    estado_trabajo(trabajo)
+    proceso = trabajo["proceso"]
+    if proceso is not None:
+        proceso.terminate()
+        try:
+            proceso.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            proceso.kill()
+            proceso.wait()
+        trabajo["proceso"] = None
+        trabajo["estado"] = "Interrumpido"
+        trabajo["codigo"] = proceso.returncode
+        trabajo["fin"] = time.time()
+guardar_trabajos()
